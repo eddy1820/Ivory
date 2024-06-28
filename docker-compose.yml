@@ -1,0 +1,92 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ivory_service_db
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
+    ports:
+      - 7600:3306
+    environment:
+      MYSQL_DATABASE: IvoryDb
+      MYSQL_ROOT_PASSWORD: 123456
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
+    networks:
+      - net
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis:/data
+    networks:
+      - net
+  #  gate:
+  #    build:
+  #      context: ./gate
+  #      dockerfile: Dockerfile
+  #    container_name: gate
+  #    ports:
+  #      - 7500:7500
+  #    restart: always
+  #    hostname: ivory_app
+  #    networks:
+  #      - net
+  #    environment:
+  #      DB_HOST: IvoryDb
+  #    depends_on:
+  #      - mysql
+  #  gate2:
+  #    build:
+  #      context: ./gate
+  #      dockerfile: Swag.Dockerfile
+  #    volumes:
+  #      - ./gate:/go/src
+  #    container_name: gate2
+  #    ports:
+  #      - 7500:7500
+  #    restart: no
+  #    hostname: ivory_app
+  #    networks:
+  #      - net
+  #    environment:
+  #      DB_HOST: IvoryDb
+  #    depends_on:
+  #      - mysql
+  #    working_dir: /go/src
+  #    command: >
+  #      bash -c "swag init && go run ."
+
+  gate3:
+    build:
+      context: ./gate
+      dockerfile: Debug.Dockerfile
+    volumes:
+      - ./gate:/go/src
+    container_name: gate3
+    ports:
+      - 7500:7500
+    restart: no
+    hostname: ivory_app
+    networks:
+      - net
+    environment:
+      DB_HOST: IvoryDb
+    depends_on:
+      - mysql
+    working_dir: /go/src
+    command: >
+      bash -c "swag init && go run ."
+
+volumes:
+  db:
+    driver: local
+networks:
+  net:
+    driver: bridge
+    name: net
+
+    #      - 7800:7800
+    ###     bash -c "swag init && dlv debug --headless --listen=:7800 --log --api-version=2"
