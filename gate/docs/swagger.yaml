@@ -1,6 +1,52 @@
 info:
   contact: {}
 paths:
+  /v1/account/login:
+    post:
+      description: 取得用戶
+      parameters:
+      - description: 帳號
+        in: formData
+        name: account
+        required: true
+        type: string
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      responses:
+        "200":
+          description: code","method","path","id"}
+          schema:
+            type: string
+      tags:
+      - 取得用戶
+  /v1/account/signIn:
+    post:
+      parameters:
+      - description: 帳號
+        in: formData
+        name: account
+        required: true
+        type: string
+      - description: 密碼
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 信箱
+        in: formData
+        name: email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: code","method","path","id"}
+          schema:
+            type: string
+      tags:
+      - 取得用戶
   /v1/redis/hash:
     get:
       description: Hash
@@ -184,7 +230,7 @@ paths:
             type: string
       tags:
       - API類型
-  /v1/user/:id:
+  /v1/user/{id}:
     get:
       description: 取得用戶
       parameters:

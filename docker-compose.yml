@@ -68,6 +68,7 @@ services:
     container_name: gate3
     ports:
       - 7500:7500
+      - 7800:7800
     restart: no
     hostname: ivory_app
     networks:
@@ -78,7 +79,7 @@ services:
       - mysql
     working_dir: /go/src
     command: >
-      bash -c "swag init && go run ."
+      bash -c "swag init && dlv debug --headless --listen=:7800 --log --api-version=2"
 
 volumes:
   db:

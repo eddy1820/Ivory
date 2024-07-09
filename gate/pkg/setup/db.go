@@ -72,7 +72,7 @@ func NewDBEngine(databaseSetting *setting.DatabaseSettings) (*gorm.DB, error) {
 
 	// otgorm.AddGormCallbacks(db)
 
-	err = tableMigration(db)
+	//err = tableMigration(db)
 	if err != nil {
 		return nil, err
 	}

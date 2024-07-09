@@ -6,13 +6,12 @@ import (
 	"gate/pkg/setting"
 	"gate/pkg/setup"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 func main() {
 	setupSetting()
-	//setupDBEngine()
-	//setupRedisEngine()
+	setupDBEngine()
+	setupRedisEngine()
 	runGinServer()
 }
 
@@ -38,9 +37,6 @@ func setupSetting() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot setup setting")
 	}
-	global.ServerSetting.ReadTimeout *= time.Second
-	global.ServerSetting.WriteTimeout *= time.Second
-	global.TokenSetting.Expire *= time.Second
 }
 
 func setupDBEngine() {

@@ -15,6 +15,76 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/account/login": {
+            "post": {
+                "description": "取得用戶",
+                "tags": [
+                    "取得用戶"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "帳號",
+                        "name": "account",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密碼",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"method\",\"path\",\"id\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/account/signIn": {
+            "post": {
+                "tags": [
+                    "取得用戶"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "帳號",
+                        "name": "account",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密碼",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "信箱",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"method\",\"path\",\"id\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/redis/hash": {
             "get": {
                 "description": "Hash",
@@ -301,7 +371,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/user/:id": {
+        "/v1/user/{id}": {
             "get": {
                 "description": "取得用戶",
                 "tags": [

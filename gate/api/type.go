@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gate/global"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -27,6 +28,10 @@ func (this *Server) GetById(c *gin.Context) {
 	//	"path":   c.Request.URL.Path,
 	//	"id":     id,
 	//})
+
+	ee := global.TokenSetting.Expire
+
+	fmt.Println("!!!! EE : " + ee.String())
 
 	c.JSON(http.StatusOK, &Response{Method: c.Request.Method, Path: c.Request.URL.Path, Data: id})
 }

@@ -60,8 +60,13 @@ func (this *Server) setupRouter() {
 	}
 	{
 		v1 := router.Group("/v1")
+		userRouter := v1.Group("/account")
+		userRouter.POST("/login", this.Login)
+		userRouter.POST("/signIn", this.SignIn)
+	}
+	{
+		v1 := router.Group("/v1")
 		userRouter := v1.Group("/user")
-		userRouter.POST("", this.Post)
 		userRouter.GET("/:id", this.GetUserById)
 	}
 
