@@ -9,7 +9,7 @@ type UserInfo struct {
 	AccountId int64  `json:"accountId,omitempty" json:"account_id,omitempty"`
 	Gender    string `json:"gender,omitempty" json:"gender,omitempty"`
 	Name      string `json:"name,omitempty" json:"name,omitempty"`
-	Address   string `json:"phone,omitempty" json:"address,omitempty"`
+	Address   string `json:"address,omitempty" json:"address,omitempty"`
 }
 
 func (this *UserInfo) TableName() string {
@@ -26,8 +26,8 @@ func (this *UserInfo) GetUserInfoById(id int64) (*UserInfo, error) {
 	return &req, nil
 }
 
-func (this *UserInfo) InsertUserInfo(info *UserInfo) error {
-	result := global.DB.Create(info)
+func (this *UserInfo) InsertUserInfo() error {
+	result := global.DB.Create(this)
 	if result.Error != nil {
 		return result.Error
 	}

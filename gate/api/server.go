@@ -66,7 +66,8 @@ func (this *Server) setupRouter() {
 	}
 	{
 		v1 := router.Group("/v1")
-		userRouter := v1.Group("/user")
+		userRouter := v1.Group("/user").Use(authMiddleware(this.tokenMaker))
+		userRouter.POST("/", this.SetUser)
 		userRouter.GET("/:id", this.GetUserById)
 	}
 

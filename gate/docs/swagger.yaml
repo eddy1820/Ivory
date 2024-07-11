@@ -230,15 +230,39 @@ paths:
             type: string
       tags:
       - API類型
-  /v1/user/{id}:
+  /v1/user:
     get:
       description: 取得用戶
+      responses:
+        "200":
+          description: code","method","path","id"}
+          schema:
+            type: string
+      tags:
+      - 取得用戶
+    post:
+      description: 設定用戶資料
       parameters:
-      - description: 用戶id
-        in: path
-        name: id
+      - description: token
+        in: header
+        name: Authorization
         required: true
-        type: integer
+        type: string
+      - description: 姓名
+        in: formData
+        name: gender
+        required: true
+        type: string
+      - description: 姓名
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 地址
+        in: formData
+        name: address
+        required: true
+        type: string
       responses:
         "200":
           description: code","method","path","id"}

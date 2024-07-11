@@ -371,18 +371,53 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/user/{id}": {
+        "/v1/user": {
             "get": {
                 "description": "取得用戶",
                 "tags": [
                     "取得用戶"
                 ],
+                "responses": {
+                    "200": {
+                        "description": "code\",\"method\",\"path\",\"id\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "設定用戶資料",
+                "tags": [
+                    "取得用戶"
+                ],
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "用戶id",
-                        "name": "id",
-                        "in": "path",
+                        "type": "string",
+                        "description": "token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "姓名",
+                        "name": "gender",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "姓名",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "地址",
+                        "name": "address",
+                        "in": "formData",
                         "required": true
                     }
                 ],

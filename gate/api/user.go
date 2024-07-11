@@ -2,6 +2,7 @@ package api
 
 import (
 	"gate/models"
+	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,21 +15,58 @@ type GetUserRequest struct {
 	Id int64 `uri:"id" binding:"required,min=1"`
 }
 
+type SetUserRequest struct {
+	Gender  string `form:"gender" json:"gender"`
+	Name    string `form:"name" json:"name"`
+	Address string `form:"address" json:"address"`
+}
+
+// SetUser
+// @Description 設定用戶資料
+// @Tags 取得用戶
+// @Success 200 string json{"code","method","path","id"}
+// @Param 	Authorization 	header 		string 	true 	"token"
+// @Param	gender			formData	string	true	"性別"
+// @Param	name			formData	string	true	"姓名"
+// @Param	address			formData	string	true	"地址"
+// @Router /v1/user [post]
+func (this *Server) SetUser(c *gin.Context) {
+
+	req := SetUserRequest{}
+
+	err := c.ShouldBind(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	payload := c.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	account := models.AccountInfo{}
+	accountInfo, err := account.GetAccountInfoByAccount(payload.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	model := models.UserInfo{AccountId: accountInfo.Id, Gender: req.Gender, Name: req.Name, Address: req.Address}
+	err = model.InsertUserInfo()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, &model)
+}
+
 // GetById
 // @Description 取得用戶
 // @Tags 取得用戶
 // @Success 200 string json{"code","method","path","id"}
-// @Param	id	path	int64	true	"用戶id"
-// @Router /v1/user/{id} [get]
+// @Router /v1/user [get]
 func (this *Server) GetUserById(c *gin.Context) {
-	req := GetUserRequest{}
-
-	if err := c.ShouldBindUri(&req); err != nil {
-		c.JSON(http.StatusInternalServerError, errorResponse(err))
-	}
 
 	model := models.UserInfo{}
-	userInfo, err := model.GetUserInfoById(req.Id)
+	userInfo, err := model.GetUserInfoById(1)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
