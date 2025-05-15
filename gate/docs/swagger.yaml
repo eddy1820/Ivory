@@ -248,7 +248,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 姓名
+      - description: 性別
         in: formData
         name: gender
         required: true

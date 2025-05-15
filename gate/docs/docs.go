@@ -401,7 +401,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "姓名",
+                        "description": "性別",
                         "name": "gender",
                         "in": "formData",
                         "required": true
