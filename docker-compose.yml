@@ -81,6 +81,18 @@ services:
 #    command: >
 #      bash -c "swag init && dlv debug --headless --listen=:7800 --log --api-version=2"
 
+  nginx:
+    image: nginx:latest
+    container_name: ivory_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - gate-swag
+    networks:
+      - net
+
 volumes:
   db:
     driver: local

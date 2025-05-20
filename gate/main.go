@@ -10,8 +10,8 @@ import (
 
 func main() {
 	setupSetting()
-	setupDBEngine()
-	setupRedisEngine()
+	//setupDBEngine()
+	//setupRedisEngine()
 	runGinServer()
 }
 
