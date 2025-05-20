@@ -21,6 +21,7 @@ func runGinServer() {
 		log.Fatal().Err(err).Msg("cannot create server")
 		return
 	}
+
 	err = server.Start(global.ServerSetting.HttpPort)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot start server")
