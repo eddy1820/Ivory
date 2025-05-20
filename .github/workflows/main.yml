@@ -19,4 +19,4 @@ jobs:
         go-version: '1.23'
 
     - name: Run tests
-      run: cd root/gate && go test ./... -v
+      run: cd gate && go test ./... -v
