@@ -48,9 +48,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
       - name: Build and Tag Docker image
         run: |
           IMAGE_NAME=my-golang-server
