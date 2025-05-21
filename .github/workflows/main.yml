@@ -94,5 +94,5 @@ jobs:
 
             echo "[EC2] Restart container"
             docker rm -f ivory-server || true
-            docker run -d --name ivory-server -p 80:7500 \$IMAGE
+            docker run -d --restart always --name ivory-server -p 80:7500 $IMAGE
           EOF
