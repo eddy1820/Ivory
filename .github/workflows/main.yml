@@ -1,4 +1,4 @@
-name: Run Tests on Merge
+name: Run Tests, Tag and Build Image
 
 on:
   push:
@@ -6,17 +6,71 @@ on:
       - main
 
 jobs:
-  test:
+  test-tag-build:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
 
-    - name: Run tests
-      run: cd gate && go test ./... -v
+      - name: Run tests
+        working-directory: gate
+        run: go test ./... -v
+
+      - name: Get latest tag version
+        id: version
+        run: |
+          git fetch --tags
+          latest=$(git tag --sort=-v:refname | grep '^v[0-9]\+$' | head -n 1)
+          if [ -z "$latest" ]; then
+            echo "NEXT_TAG=v1" >> $GITHUB_ENV
+          else
+            number=$(echo $latest | sed 's/v//')
+            next=$((number + 1))
+            echo "NEXT_TAG=v$next" >> $GITHUB_ENV
+          fi
+
+      - name: Create and push new Git tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag $NEXT_TAG
+          git push origin $NEXT_TAG
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and Tag Docker image
+        run: |
+          IMAGE_NAME=my-golang-server
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION=${{ secrets.AWS_REGION }}
+          ECR_REPO=${{ secrets.ECR_REPO }}
+
+          IMAGE_TAG=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${NEXT_TAG}
+
+          docker build -t $IMAGE_NAME ./gate
+          docker tag $IMAGE_NAME $IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          IMAGE_TAG=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:${NEXT_TAG}
+          docker push $IMAGE_TAG
