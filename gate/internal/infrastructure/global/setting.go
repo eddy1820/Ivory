@@ -1,7 +1,7 @@
 package global
 
 import (
-	"gate/pkg/setting"
+	"gate/internal/infrastructure/setting"
 )
 
 var (

@@ -1,22 +1,23 @@
 package main
 
 import (
-	"gate/api"
-	"gate/global"
-	"gate/pkg/setting"
+	"gate/internal/infrastructure/global"
+	"gate/internal/infrastructure/setting"
 	"gate/pkg/setup"
+	"gate/router"
 	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
 )
 
 func main() {
 	setupSetting()
-	//setupDBEngine()
+	db := setupDBEngine()
 	//setupRedisEngine()
-	runGinServer()
+	runGinServer(db)
 }
 
-func runGinServer() {
-	server, err := api.NewServer(global.TokenSetting)
+func runGinServer(db *gorm.DB) {
+	server, err := router.NewServer(db, global.TokenSetting)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot create server")
 		return
@@ -39,12 +40,13 @@ func setupSetting() {
 	}
 }
 
-func setupDBEngine() {
+func setupDBEngine() *gorm.DB {
 	var err error
-	global.DB, err = setup.NewDBEngine(global.DatabaseSetting)
+	db, err := setup.NewDBEngine(global.DatabaseSetting)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot start db")
 	}
+	return db
 }
 
 func setupRedisEngine() {

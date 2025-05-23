@@ -3,17 +3,12 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"gate/global"
+	"gate/internal/infrastructure/global"
+	"gate/router"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
-
-type Response struct {
-	Method string `form:"method" json:"method"`
-	Path   string `form:"path" json:"path"`
-	Data   string `form:"data" json:"data"`
-}
 
 // GetById
 // @Description 取得用戶
@@ -21,7 +16,7 @@ type Response struct {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	id	path	int64	true	"用戶id"
 // @Router /v1/type/{id} [get]
-func (this *Server) GetById(c *gin.Context) {
+func (this *router.Server) GetById(c *gin.Context) {
 	id := c.Param("id")
 	//c.JSON(http.StatusOK, gin.H{
 	//	"method": c.Request.Method,
@@ -46,7 +41,7 @@ type ByParamsRequest struct {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	id	query	int64	true	"用戶id"
 // @Router /v1/type/byParams [get]
-func (this *Server) ByParams(c *gin.Context) {
+func (this *router.Server) ByParams(c *gin.Context) {
 	req := ByParamsRequest{}
 
 	err := c.ShouldBindQuery(&req)
@@ -68,7 +63,7 @@ func (this *Server) ByParams(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	name	formData	string	true	"姓名"
 // @Router /v1/type/byFormData [post]
-func (this *Server) ByFormData(c *gin.Context) {
+func (this *router.Server) ByFormData(c *gin.Context) {
 	name := c.PostForm("name")
 	//c.JSON(http.StatusOK, gin.H{
 	//	"method": c.Request.Method,
@@ -86,7 +81,7 @@ func (this *Server) ByFormData(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @param data body string true "json string"
 // @Router /v1/type/byRaw [post]
-func (this *Server) ByRaw(c *gin.Context) {
+func (this *router.Server) ByRaw(c *gin.Context) {
 	data, _ := c.GetRawData()
 	//c.JSON(http.StatusOK, gin.H{
 	//	"method": c.Request.Method,
@@ -107,7 +102,7 @@ type ByJsonRequest struct {
 // @Success 200 string json{"code","method","path","id"}
 // @param data body string true "json string"
 // @Router /v1/type/byJson [post]
-func (this *Server) ByJson(c *gin.Context) {
+func (this *router.Server) ByJson(c *gin.Context) {
 	req := ByJsonRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		fmt.Println("err : " + err.Error())
@@ -131,7 +126,7 @@ type ByUriRequest struct {
 // @Param	id		path	int64	true	"用戶id"
 // @Param	name	path	string	true	"用戶姓名"
 // @Router /v1/type/{id}/{name} [get]
-func (this *Server) ByUri(c *gin.Context) {
+func (this *router.Server) ByUri(c *gin.Context) {
 	req := ByUriRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
 		fmt.Println("err : " + err.Error())

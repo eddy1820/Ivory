@@ -3,7 +3,9 @@ package api
 import (
 	"context"
 	"fmt"
-	"gate/global"
+	"gate/internal/infrastructure/global"
+	"gate/router"
+
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -15,7 +17,7 @@ import (
 // @Success 200 string json{"code","method","path","id"}
 // @Param	data	query	string	true	"data"
 // @Router /v1/redis/string [get]
-func (this *Server) String(c *gin.Context) {
+func (this *router.Server) String(c *gin.Context) {
 	data := c.Query("data")
 	ctx := context.Background()
 	err := global.Redis.Set(ctx, "KEY", data, 10*time.Minute).Err()
@@ -57,7 +59,7 @@ func (this *Server) String(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	data	query	string	true	"data"
 // @Router /v1/redis/hash [get]
-func (this *Server) Hash(c *gin.Context) {
+func (this *router.Server) Hash(c *gin.Context) {
 	data := c.Query("data")
 
 	c.JSON(http.StatusOK, gin.H{
@@ -73,7 +75,7 @@ func (this *Server) Hash(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	data	query	string	true	"data"
 // @Router /v1/redis/list [get]
-func (this *Server) List(c *gin.Context) {
+func (this *router.Server) List(c *gin.Context) {
 	data := c.Query("data")
 	c.JSON(http.StatusOK, gin.H{
 		"method": c.Request.Method,
@@ -88,7 +90,7 @@ func (this *Server) List(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	data	query	string	true	"data"
 // @Router /v1/redis/set [get]
-func (this *Server) Set(c *gin.Context) {
+func (this *router.Server) Set(c *gin.Context) {
 	data := c.Query("data")
 	c.JSON(http.StatusOK, gin.H{
 		"method": c.Request.Method,
@@ -103,7 +105,7 @@ func (this *Server) Set(c *gin.Context) {
 // @Success 200 string json{"code","method","path","id"}
 // @Param	data	query	string	true	"data"
 // @Router /v1/redis/sortedSet [get]
-func (this *Server) SortedSet(c *gin.Context) {
+func (this *router.Server) SortedSet(c *gin.Context) {
 	data := c.Query("data")
 	c.JSON(http.StatusOK, gin.H{
 		"method": c.Request.Method,
