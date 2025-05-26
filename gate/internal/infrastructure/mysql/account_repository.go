@@ -26,7 +26,7 @@ func (ar *AccountRepository) GetAccountInfoByAccount(account string) (domain.Acc
 func (ar *AccountRepository) InsertAccount(account domain.Account) error {
 	account.CreatedAt = time.Now()
 	account.PasswordChangedAt = time.Now()
-	result := ar.db.Create(account)
+	result := ar.db.Create(&account)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -3,10 +3,10 @@ package controller
 import (
 	"gate/internal/domain"
 	"gate/internal/infrastructure/global"
+	"gate/internal/pkg/error_code"
+	"gate/internal/pkg/token"
+	"gate/internal/pkg/util"
 	"gate/internal/usecase"
-	"gate/pkg/token"
-	"gate/pkg/util"
-	"gate/router"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -22,6 +22,7 @@ type AccountLoginResponse struct {
 
 type AccountController struct {
 	router         *gin.Engine
+	tokenMaker     token.Maker
 	accountUsecase *usecase.AccountUsecase
 }
 
@@ -35,8 +36,8 @@ type CreateAccountResponse struct {
 	AccessToken string `json:"accessToken"`
 }
 
-func NewAccountController(router *gin.Engine, maker token.Maker, accountUsecase *usecase.AccountUsecase) *AccountController {
-	controller := &AccountController{router: router, accountUsecase: accountUsecase}
+func RegisterAccountRoutes(router *gin.Engine, maker token.Maker, accountUsecase *usecase.AccountUsecase) *AccountController {
+	controller := &AccountController{router: router, tokenMaker: maker, accountUsecase: accountUsecase}
 	v1 := router.Group("/v1")
 	userRouter := v1.Group("/account")
 	userRouter.POST("/login", controller.Login)
@@ -52,29 +53,28 @@ func NewAccountController(router *gin.Engine, maker token.Maker, accountUsecase 
 // @Param	password	formData	string	true	"密碼"
 // @Param	email		formData	string	true	"信箱"
 // @Router /v1/account/signIn [post]
-func (ac AccountController) SignIn(c *gin.Context) {
+func (ac AccountController) SignIn(ctx *gin.Context) {
 	req := &CreateAccountReq{}
 
-	err := c.Bind(&req)
+	err := ctx.Bind(&req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, router.ErrorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, router.ErrorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 	account := domain.Account{Account: req.Account, Email: req.Email, HashedPassword: hashedPassword}
 
 	err = ac.accountUsecase.InsertAccount(account)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, router.ErrorResponse(err))
+		error_code.InvalidParams.WithDetails(err.Error()).SendResponse(ctx)
 		return
 	}
-
-	c.JSON(http.StatusOK, nil)
+	error_code.Success.SendResponse(ctx)
 }
 
 // Login
@@ -84,34 +84,32 @@ func (ac AccountController) SignIn(c *gin.Context) {
 // @Param	account		formData	string	true	"帳號"
 // @Param	password	formData	string	true	"密碼"
 // @Router /v1/account/login [post]
-func (ac AccountController) Login(c *gin.Context) {
+func (ac AccountController) Login(ctx *gin.Context) {
 	req := AccountLoginRequest{}
 
-	err := c.ShouldBind(&req)
+	err := ctx.ShouldBind(&req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, router.errorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 
-	model := models.AccountInfo{}
-
-	account, err := model.GetAccountInfoByAccount(req.Account)
+	account, err := ac.accountUsecase.GetAccountInfoByAccount(req.Account)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, router.errorResponse(err))
+		error_code.ErrorUserNotExist.SendResponse(ctx)
 		return
 	}
 
 	err = util.CheckPassword(req.Password, account.HashedPassword)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, router.errorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 
-	token, err := this.tokenMaker.CreateToken(account.Account, global.TokenSetting.Expire)
+	token, err := ac.tokenMaker.CreateToken(account.Account, global.TokenSetting.Expire)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, router.errorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 
-	c.JSON(http.StatusOK, &AccountLoginResponse{AccessToken: token})
+	ctx.JSON(http.StatusOK, &AccountLoginResponse{AccessToken: token})
 }

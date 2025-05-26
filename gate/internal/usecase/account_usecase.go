@@ -1,8 +1,10 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"gate/internal/domain"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -26,15 +28,13 @@ func (ac *AccountUsecase) GetAccountInfoByAccount(account string) (res domain.Ac
 
 func (ac *AccountUsecase) InsertAccount(account domain.Account) error {
 	_, err := ac.accountRepository.GetAccountInfoByAccount(account.Account)
-	if err != nil {
-		return fmt.Errorf("account is already exists")
+	if err == nil {
+		return fmt.Errorf("account %s already exists", account.Account)
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return fmt.Errorf("failed to check account existence: %w", err)
 	}
 	account.CreatedAt = time.Now()
 	account.PasswordChangedAt = time.Now()
-
-	err = ac.accountRepository.InsertAccount(account)
-	if err != nil {
-		return err
-	}
-	return nil
+	return ac.accountRepository.InsertAccount(account)
 }

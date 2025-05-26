@@ -1,7 +1,7 @@
 package token
 
 import (
-	"gate/pkg/util"
+	"gate/internal/pkg/util"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

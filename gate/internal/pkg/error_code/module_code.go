@@ -1,4 +1,4 @@
-package errcode
+package error_code
 
 var (
 	ErrorOutOfRange = BadRequestErrorData(20000001, "超出分頁範圍")

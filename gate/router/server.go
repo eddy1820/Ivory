@@ -6,8 +6,8 @@ import (
 	"gate/internal/controller"
 	"gate/internal/infrastructure/mysql"
 	"gate/internal/infrastructure/setting"
+	token2 "gate/internal/pkg/token"
 	"gate/internal/usecase"
-	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
@@ -17,12 +17,12 @@ import (
 
 type Server struct {
 	router     *gin.Engine
-	tokenMaker token.Maker
+	tokenMaker token2.Maker
 	db         *gorm.DB
 }
 
 func NewServer(db *gorm.DB, config *setting.TokenSettings) (*Server, error) {
-	tokenMaker, err := token.NewPasetoMaker(config.Secret)
+	tokenMaker, err := token2.NewPasetoMaker(config.Secret)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
@@ -43,7 +43,7 @@ func (s *Server) setupRouter() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler)) // http://localhost:7500/swagger/index.html
 
 	userUsecase := usecase.NewUserUsecase(mysql.NewUserRepository(s.db), mysql.NewAccountRepository(s.db))
-	controller.NewUserController(router, s.tokenMaker, userUsecase)
+	controller.RegisterUserRoutes(router, s.tokenMaker, userUsecase)
 
 	//{
 	//	v1 := router.Group("/v1")
@@ -51,6 +51,8 @@ func (s *Server) setupRouter() {
 	//	userRouter.POST("/login", s.Login)
 	//	userRouter.POST("/signIn", s.SignIn)
 	//}
+	accountUsecase := usecase.NewAccountUsecase(mysql.NewAccountRepository(s.db))
+	controller.RegisterAccountRoutes(router, s.tokenMaker, accountUsecase)
 
 	s.router = router
 }
@@ -58,8 +60,4 @@ func (s *Server) setupRouter() {
 // Start runs the HTTP server on a specific address.
 func (s *Server) Start(address string) error {
 	return s.router.Run(":" + address)
-}
-
-func ErrorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
 }

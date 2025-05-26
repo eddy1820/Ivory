@@ -10,3 +10,7 @@ type Account struct {
 	PasswordChangedAt time.Time `json:"passwordChanged_at"`
 	CreatedAt         time.Time `json:"createdAt"`
 }
+
+func (this *Account) TableName() string {
+	return "account"
+}

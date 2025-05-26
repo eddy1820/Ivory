@@ -2,9 +2,9 @@ package controller
 
 import (
 	"gate/internal/interface_adapter/middleware"
+	"gate/internal/pkg/error_code"
+	token2 "gate/internal/pkg/token"
 	"gate/internal/usecase"
-	"gate/pkg/token"
-	"gate/router"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -29,7 +29,7 @@ type UserController struct {
 	userUsecase *usecase.UserUsecase
 }
 
-func NewUserController(router *gin.Engine, maker token.Maker, userUsecase *usecase.UserUsecase) *UserController {
+func RegisterUserRoutes(router *gin.Engine, maker token2.Maker, userUsecase *usecase.UserUsecase) *UserController {
 	controller := &UserController{router: router, userUsecase: userUsecase}
 	v1 := router.Group("/v1")
 	userRouter := v1.Group("/user").Use(middleware.AuthMiddleware(maker))
@@ -49,19 +49,18 @@ func NewUserController(router *gin.Engine, maker token.Maker, userUsecase *useca
 // @Router /v1/user [post]
 func (uc UserController) SetUser(ctx *gin.Context) {
 	req := SetUserRequest{}
-
 	err := ctx.ShouldBind(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, router.ErrorResponse(err))
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
-	payload := ctx.MustGet(middleware.AuthorizationPayloadKey).(*token.Payload)
-	err = uc.userUsecase.SetUser(payload.Username, req.Gender, req.Name, req.Address)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, router.ErrorResponse(err))
+	payload := ctx.MustGet(middleware.AuthorizationPayloadKey).(*token2.Payload)
+	errCode := uc.userUsecase.SetUser(payload.Username, req.Gender, req.Name, req.Address)
+	if errCode != nil {
+		errCode.SendResponse(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, nil)
+	error_code.Success.SendResponse(ctx)
 }
 
 // GetById
@@ -73,12 +72,12 @@ func (uc UserController) GetUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	idNum, err := strconv.Atoi(id)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid parameter"})
+		error_code.InvalidParams.SendResponse(ctx)
 		return
 	}
 	user, err := uc.userUsecase.GetUserById(int64(idNum))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, router.ErrorResponse(err))
+		error_code.NotFound.SendResponse(ctx)
 		return
 	}
 	ctx.JSON(http.StatusOK, &user)

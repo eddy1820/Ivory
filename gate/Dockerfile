@@ -1,8 +1,8 @@
 FROM golang:latest
-RUN mkdir /gate
+RUN mkdir /server
 ADD . /gate
 
-#RUN ls -l /gate && sleep 10
+#RUN ls -l /server && sleep 10
 WORKDIR /gate
 RUN go mod download
 RUN go build -o main .

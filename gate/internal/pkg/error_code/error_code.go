@@ -1,7 +1,8 @@
-package errcode
+package error_code
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -73,4 +74,8 @@ func (e *ErrorData) StatusCode() int {
 	}
 
 	return http.StatusInternalServerError
+}
+
+func (e *ErrorData) SendResponse(c *gin.Context) {
+	c.JSON(e.StatusCode(), e)
 }

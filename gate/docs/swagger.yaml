@@ -47,199 +47,7 @@ paths:
             type: string
       tags:
       - 取得用戶
-  /v1/redis/hash:
-    get:
-      description: Hash
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/list:
-    get:
-      description: List
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/set:
-    get:
-      description: Set
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/sortedSet:
-    get:
-      description: SortedSet
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/string:
-    get:
-      description: String
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/type/{id}:
-    get:
-      description: 取得用戶
-      parameters:
-      - description: 用戶id
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/{id}/{name}:
-    get:
-      description: ByJson
-      parameters:
-      - description: 用戶id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 用戶姓名
-        in: path
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byFormData:
-    post:
-      description: 取得用戶
-      parameters:
-      - description: 姓名
-        in: formData
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byJson:
-    post:
-      description: ByJson
-      parameters:
-      - description: json string
-        in: body
-        name: data
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byParams:
-    get:
-      description: 取得用戶
-      parameters:
-      - description: 用戶id
-        in: query
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byRaw:
-    post:
-      description: Raw data
-      parameters:
-      - description: json string
-        in: body
-        name: data
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
   /v1/user:
-    get:
-      description: 取得用戶
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - 取得用戶
     post:
       description: 設定用戶資料
       parameters:
@@ -263,6 +71,16 @@ paths:
         name: address
         required: true
         type: string
+      responses:
+        "200":
+          description: code","method","path","id"}
+          schema:
+            type: string
+      tags:
+      - 取得用戶
+  /v1/user/{id}:
+    get:
+      description: 取得用戶
       responses:
         "200":
           description: code","method","path","id"}

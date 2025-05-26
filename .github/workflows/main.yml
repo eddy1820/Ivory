@@ -20,7 +20,7 @@ jobs:
           go-version: '1.23'
 
       - name: Run tests
-        working-directory: gate
+        working-directory: server
         run: go test ./... -v
 
       - name: Get latest tag version

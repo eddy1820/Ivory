@@ -1,4 +1,4 @@
-package errcode
+package error_code
 
 var (
 	Success                   = NewErrorData(0, "success")

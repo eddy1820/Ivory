@@ -3,7 +3,7 @@ package main
 import (
 	"gate/internal/infrastructure/global"
 	"gate/internal/infrastructure/setting"
-	"gate/pkg/setup"
+	setup2 "gate/internal/pkg/setup"
 	"gate/router"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -42,7 +42,7 @@ func setupSetting() {
 
 func setupDBEngine() *gorm.DB {
 	var err error
-	db, err := setup.NewDBEngine(global.DatabaseSetting)
+	db, err := setup2.NewDBEngine(global.DatabaseSetting)
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot start db")
 	}
@@ -50,5 +50,5 @@ func setupDBEngine() *gorm.DB {
 }
 
 func setupRedisEngine() {
-	global.Redis = setup.NewRedisEngine(global.RedisSetting)
+	global.Redis = setup2.NewRedisEngine(global.RedisSetting)
 }

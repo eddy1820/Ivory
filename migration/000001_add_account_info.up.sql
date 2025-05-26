@@ -1,4 +1,4 @@
-CREATE TABLE IvoryDb.account_info
+CREATE TABLE IvoryDb.account
 (
     id                  bigint unsigned NOT NULL AUTO_INCREMENT,
     account             varchar(255) NOT NULL DEFAULT '',

@@ -1,4 +1,4 @@
-CREATE TABLE user_info
+CREATE TABLE user
 (
     id         bigint unsigned NOT NULL AUTO_INCREMENT,
     account_id bigint unsigned NOT NULL,

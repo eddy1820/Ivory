@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"gate/pkg/token"
+	"gate/internal/pkg/token"
 	"net/http"
 	"strings"
 
