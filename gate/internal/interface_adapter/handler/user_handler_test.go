@@ -8,7 +8,7 @@ import (
 	"gate/internal/usecase/mocks"
 	"gate/internal/usecase/usecase_interface"
 	"gate/pkg/error_code"
-	token2 "gate/pkg/token"
+	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -22,8 +22,8 @@ func setupUserRouterAndHandler(t *testing.T, mockUsecase usecase_interface.UserU
 
 	r := gin.New()
 
-	fakePayload := &token2.Payload{Username: "eddy123"}
-	maker, _ := token2.NewPasetoMaker("12345678901234567890123456789012")
+	fakePayload := &token.Payload{Username: "eddy123"}
+	maker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
 
 	r.Use(func(c *gin.Context) {
 		c.Set(middleware.AuthorizationPayloadKey, fakePayload)

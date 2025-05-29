@@ -3,8 +3,9 @@ package handler
 import (
 	"gate/internal/interface_adapter/middleware"
 	"gate/internal/usecase/usecase_interface"
-	error_code2 "gate/pkg/error_code"
-	token2 "gate/pkg/token"
+	"gate/pkg/error_code"
+	"gate/pkg/response"
+	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -28,7 +29,7 @@ type UserHandler struct {
 	userUsecase usecase_interface.UserUsecase
 }
 
-func RegisterUserRoutes(router *gin.Engine, maker token2.Maker, userUsecase usecase_interface.UserUsecase, enableAuth bool) *UserHandler {
+func RegisterUserRoutes(router *gin.Engine, maker token.Maker, userUsecase usecase_interface.UserUsecase, enableAuth bool) *UserHandler {
 	controller := &UserHandler{router: router, userUsecase: userUsecase}
 	v1 := router.Group("/v1")
 	userRouter := v1.Group("/user")
@@ -53,20 +54,20 @@ func RegisterUserRoutes(router *gin.Engine, maker token2.Maker, userUsecase usec
 func (uc UserHandler) SetUser(ctx *gin.Context) {
 	req := SetUserRequest{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		error_code2.InvalidParams.SendResponse(ctx)
+		response.Error(ctx, error_code.InvalidParams)
 		return
 	}
-	payload := ctx.MustGet(middleware.AuthorizationPayloadKey).(*token2.Payload)
+	payload := ctx.MustGet(middleware.AuthorizationPayloadKey).(*token.Payload)
 	code := uc.userUsecase.SetUser(payload.Username, req.Gender, req.Name, req.Address)
 	switch code {
-	case error_code2.CodeNotFound:
-		error_code2.InvalidParams.SendResponse(ctx)
+	case error_code.CodeNotFound:
+		response.Error(ctx, error_code.InvalidParams)
 		return
-	case error_code2.CodeDBError:
-		error_code2.InvalidParams.SendResponse(ctx)
+	case error_code.CodeDBError:
+		response.Error(ctx, error_code.InvalidParams)
 		return
 	}
-	error_code2.Success.SendResponse(ctx)
+	response.SuccessNoData(ctx)
 }
 
 // GetUserById
@@ -82,17 +83,17 @@ func (uc UserHandler) GetUserById(ctx *gin.Context) {
 	id := ctx.Param("id")
 	idNum, err := strconv.Atoi(id)
 	if err != nil {
-		error_code2.InvalidParams.SendResponse(ctx)
+		response.Error(ctx, error_code.InvalidParams)
 		return
 	}
 	user, code := uc.userUsecase.GetUserById(int64(idNum))
 	switch code {
-	case error_code2.CodeNotFound:
-		error_code2.NotFound.SendResponse(ctx)
+	case error_code.CodeNotFound:
+		response.Error(ctx, error_code.NotFound)
 		return
-	case error_code2.CodeDBError:
-		error_code2.InvalidParams.SendResponse(ctx)
+	case error_code.CodeDBError:
+		response.Error(ctx, error_code.InvalidParams)
 		return
 	}
-	error_code2.SuccessResponse(ctx, &user)
+	response.Success(ctx, user)
 }

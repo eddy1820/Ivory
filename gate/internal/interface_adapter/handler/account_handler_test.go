@@ -8,8 +8,9 @@ import (
 	"gate/internal/infrastructure/setting"
 	"gate/internal/usecase/mocks"
 	"gate/internal/usecase/usecase_interface"
+	"gate/pkg/response"
 	"gate/pkg/token"
-	util2 "gate/pkg/util"
+	"gate/pkg/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -63,7 +64,7 @@ func TestAccountHandler_Login(t *testing.T) {
 
 	router := setupAccountRouter(mockUsecase)
 
-	hashedPwd, _ := util2.HashPassword("strongpwd")
+	hashedPwd, _ := util.HashPassword("strongpwd")
 
 	mockUsecase.EXPECT().
 		GetAccountInfoByAccount("eddy").
@@ -86,7 +87,7 @@ func TestAccountHandler_Login(t *testing.T) {
 	router.ServeHTTP(resp, req)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
-	response := util2.APIResponse[AccountLoginResponse]{}
+	response := response.APIResponse[AccountLoginResponse]{}
 	_ = json.Unmarshal(resp.Body.Bytes(), &response)
 	assert.NotEmpty(t, response.Data.AccessToken)
 }
