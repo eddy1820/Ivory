@@ -19,8 +19,16 @@ jobs:
         with:
           go-version: '1.23'
 
+      - name: Install gomock
+        working-directory: gate
+        run: go get github.com/golang/mock/gomock@v1.6.0
+
       - name: Install mockgen
         run: go install github.com/golang/mock/mockgen@v1.6.0
+
+      - name: Generate mocks
+        working-directory: gate
+        run: go generate ./...
 
       - name: Generate mocks
         working-directory: server
