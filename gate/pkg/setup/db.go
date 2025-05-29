@@ -2,8 +2,8 @@ package setup
 
 import (
 	"fmt"
-	"gate/global"
-	"gate/pkg/setting"
+	"gate/internal/infrastructure/global"
+	"gate/internal/infrastructure/setting"
 	"gorm.io/driver/mysql"
 	"time"
 

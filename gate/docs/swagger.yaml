@@ -1,9 +1,43 @@
+definitions:
+  domain.User:
+    properties:
+      account_id:
+        type: integer
+      address:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  error_code.ErrorData:
+    properties:
+      code:
+        type: integer
+      details:
+        items:
+          type: string
+        type: array
+      message:
+        type: string
+    type: object
+  handler.SetUserRequest:
+    properties:
+      address:
+        type: string
+      gender:
+        type: string
+      name:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
   /v1/account/login:
     post:
-      description: 取得用戶
+      description: Login
       parameters:
       - description: 帳號
         in: formData
@@ -21,9 +55,10 @@ paths:
           schema:
             type: string
       tags:
-      - 取得用戶
-  /v1/account/signIn:
+      - Account
+  /v1/account/register:
     post:
+      description: Register
       parameters:
       - description: 帳號
         in: formData
@@ -46,228 +81,53 @@ paths:
           schema:
             type: string
       tags:
-      - 取得用戶
-  /v1/redis/hash:
-    get:
-      description: Hash
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/list:
-    get:
-      description: List
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/set:
-    get:
-      description: Set
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/sortedSet:
-    get:
-      description: SortedSet
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/redis/string:
-    get:
-      description: String
-      parameters:
-      - description: data
-        in: query
-        name: data
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - Redis
-  /v1/type/{id}:
-    get:
-      description: 取得用戶
-      parameters:
-      - description: 用戶id
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/{id}/{name}:
-    get:
-      description: ByJson
-      parameters:
-      - description: 用戶id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 用戶姓名
-        in: path
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byFormData:
-    post:
-      description: 取得用戶
-      parameters:
-      - description: 姓名
-        in: formData
-        name: name
-        required: true
-        type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byJson:
-    post:
-      description: ByJson
-      parameters:
-      - description: json string
-        in: body
-        name: data
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byParams:
-    get:
-      description: 取得用戶
-      parameters:
-      - description: 用戶id
-        in: query
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
-  /v1/type/byRaw:
-    post:
-      description: Raw data
-      parameters:
-      - description: json string
-        in: body
-        name: data
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - API類型
+      - Account
   /v1/user:
-    get:
-      description: 取得用戶
-      responses:
-        "200":
-          description: code","method","path","id"}
-          schema:
-            type: string
-      tags:
-      - 取得用戶
     post:
-      description: 設定用戶資料
+      consumes:
+      - application/json
+      description: Set the user information
       parameters:
-      - description: token
+      - description: JWT Token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 性別
-        in: formData
-        name: gender
+      - description: User info
+        in: body
+        name: body
         required: true
-        type: string
-      - description: 姓名
-        in: formData
-        name: name
-        required: true
-        type: string
-      - description: 地址
-        in: formData
-        name: address
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/handler.SetUserRequest'
+      produces:
+      - application/json
       responses:
         "200":
-          description: code","method","path","id"}
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/error_code.ErrorData'
+      summary: Set the user information
       tags:
-      - 取得用戶
+      - User
+  /v1/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get User info
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      summary: Get User information by user_id
+      tags:
+      - User
 swagger: "2.0"

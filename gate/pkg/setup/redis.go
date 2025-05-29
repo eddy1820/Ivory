@@ -3,7 +3,7 @@ package setup
 import (
 	"context"
 	"fmt"
-	"gate/pkg/setting"
+	"gate/internal/infrastructure/setting"
 	"github.com/redis/go-redis/v9"
 	"log"
 	"time"

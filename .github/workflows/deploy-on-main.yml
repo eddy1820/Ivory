@@ -1,0 +1,113 @@
+name: Run Tests, Tag, Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-tag-build-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Install gomock
+        working-directory: gate
+        run: go get github.com/golang/mock/gomock@v1.6.0
+
+      - name: Install mockgen
+        run: go install github.com/golang/mock/mockgen@v1.6.0
+
+      - name: Generate mocks
+        working-directory: gate
+        run: go generate ./...
+
+      - name: Generate mocks
+        working-directory: server
+        run: go generate ./...
+
+      - name: Run tests
+        working-directory: server
+        run: go test ./... -v
+
+      - name: Get latest tag version
+        id: version
+        run: |
+          git fetch --tags
+          latest=$(git tag --sort=-v:refname | grep '^v[0-9]\+$' | head -n 1)
+          if [ -z "$latest" ]; then
+            echo "NEXT_TAG=v1" >> $GITHUB_ENV
+          else
+            number=$(echo $latest | sed 's/v//')
+            next=$((number + 1))
+            echo "NEXT_TAG=v$next" >> $GITHUB_ENV
+          fi
+
+      - name: Create and push new Git tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag $NEXT_TAG
+          git push origin $NEXT_TAG
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Docker login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} |
+          docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build and Tag Docker image
+        run: |
+          IMAGE_NAME=my-golang-server
+          IMAGE_TAG=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:${{ env.NEXT_TAG }}
+          docker build -t $IMAGE_NAME ./gate
+          docker tag $IMAGE_NAME $IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          IMAGE_TAG=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:${{ env.NEXT_TAG }}
+          docker push $IMAGE_TAG
+
+      - name: Save SSH Key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > key.pem
+          chmod 600 key.pem
+
+      - name: Deploy to EC2 via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            export AWS_REGION=${{ secrets.AWS_REGION }}
+            export AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            export ECR_REPO=${{ secrets.ECR_REPO }}
+            export TAG=${{ env.NEXT_TAG }}
+            IMAGE=\$AWS_ACCOUNT_ID.dkr.ecr.\$AWS_REGION.amazonaws.com/\$ECR_REPO:\$TAG
+
+            echo "[EC2] Login to ECR using IAM Role"
+            aws ecr get-login-password --region \$AWS_REGION | docker login --username AWS --password-stdin \$AWS_ACCOUNT_ID.dkr.ecr.\$AWS_REGION.amazonaws.com
+
+            echo "[EC2] Pull image"
+            docker pull \$IMAGE
+
+            echo "[EC2] Restart container"
+            docker rm -f ivory-server || true
+            docker run -d --restart always --name ivory-server -p 80:7500 \$IMAGE
+          EOF

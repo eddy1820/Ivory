@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine
+FROM golang:1.23-alpine
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN apk add --no-cache g++ git bash
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
