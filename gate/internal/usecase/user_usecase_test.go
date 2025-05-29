@@ -5,8 +5,8 @@ import (
 	"gate/internal/domain"
 	"gate/internal/usecase/mocks"
 	"gate/pkg/error_code"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/mock/gomock"
 	"gorm.io/gorm"
 	"testing"
 )
