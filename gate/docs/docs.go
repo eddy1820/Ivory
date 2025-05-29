@@ -17,9 +17,9 @@ const docTemplate = `{
     "paths": {
         "/v1/account/login": {
             "post": {
-                "description": "取得用戶",
+                "description": "Login",
                 "tags": [
-                    "取得用戶"
+                    "Account"
                 ],
                 "parameters": [
                     {
@@ -47,10 +47,11 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/account/signIn": {
+        "/v1/account/register": {
             "post": {
+                "description": "Register",
                 "tags": [
-                    "取得用戶"
+                    "Account"
                 ],
                 "parameters": [
                     {
@@ -87,45 +88,40 @@ const docTemplate = `{
         },
         "/v1/user": {
             "post": {
-                "description": "設定用戶資料",
-                "tags": [
-                    "取得用戶"
+                "description": "Set the user information",
+                "consumes": [
+                    "application/json"
                 ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Set the user information",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "token",
+                        "description": "JWT Token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "性別",
-                        "name": "gender",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "姓名",
-                        "name": "name",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "地址",
-                        "name": "address",
-                        "in": "formData",
-                        "required": true
+                        "description": "User info",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.SetUserRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"method\",\"path\",\"id\"}",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/error_code.ErrorData"
                         }
                     }
                 }
@@ -133,17 +129,86 @@ const docTemplate = `{
         },
         "/v1/user/{id}": {
             "get": {
-                "description": "取得用戶",
+                "description": "Get User info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
-                    "取得用戶"
+                    "User"
+                ],
+                "summary": "Get User information by user_id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
                 ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"method\",\"path\",\"id\"}",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/domain.User"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.User": {
+            "type": "object",
+            "properties": {
+                "account_id": {
+                    "type": "integer"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "error_code.ErrorData": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.SetUserRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }

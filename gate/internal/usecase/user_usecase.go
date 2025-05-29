@@ -1,46 +1,48 @@
 package usecase
 
 import (
+	"errors"
 	"gate/internal/domain"
-	error_code2 "gate/internal/pkg/error_code"
+	"gate/internal/usecase/repo_interface"
+	"gate/pkg/error_code"
+	"gorm.io/gorm"
 )
 
-type UserRepository interface {
-	GetUserById(id int64) (user domain.User, err error)
-	InsertUser(user domain.User) error
-}
-
-type AccountRepository interface {
-	GetAccountInfoByAccount(account string) (domain.Account, error)
-	InsertAccount(account domain.Account) error
-}
-
 type UserUsecase struct {
-	userRepository    UserRepository
-	accountRepository AccountRepository
+	userRepository    repo_interface.UserRepository
+	accountRepository repo_interface.AccountRepository
 }
 
-func NewUserUsecase(userRepository UserRepository, accountRepository AccountRepository) *UserUsecase {
+func NewUserUsecase(userRepository repo_interface.UserRepository, accountRepository repo_interface.AccountRepository) *UserUsecase {
 	return &UserUsecase{
 		userRepository:    userRepository,
 		accountRepository: accountRepository,
 	}
 }
 
-func (uc *UserUsecase) GetUserById(id int64) (domain.User, error) {
-	return uc.userRepository.GetUserById(id)
+func (uc *UserUsecase) GetUserById(id int64) (domain.User, int) {
+	user, err := uc.userRepository.GetUserById(id)
+	if err == nil {
+		return user, error_code.CodeOK
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return domain.User{}, error_code.CodeNotFound
+	}
+	return user, error_code.CodeDBError
 }
 
-func (uc *UserUsecase) SetUser(username string, gender string, name string, address string) *error_code2.ErrorData {
-	account := domain.Account{}
+func (uc *UserUsecase) SetUser(username string, gender string, name string, address string) int {
 	account, err := uc.accountRepository.GetAccountInfoByAccount(username)
 	if err != nil {
-		return error_code2.ErrorConflictUser
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return error_code.CodeNotFound
+		}
+		return error_code.CodeDBError
 	}
+
 	user := domain.User{AccountId: account.Id, Gender: gender, Name: name, Address: address}
-	err = uc.userRepository.InsertUser(user)
-	if err != nil {
-		return error_code2.InvalidParams.WithDetails(err.Error())
+	if err := uc.userRepository.InsertUser(user); err != nil {
+		return error_code.CodeDBError
 	}
-	return nil
+	return error_code.CodeOK
 }

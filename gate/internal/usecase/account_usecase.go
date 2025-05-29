@@ -2,39 +2,46 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"gate/internal/domain"
+	"gate/internal/usecase/repo_interface"
+	"gate/pkg/error_code"
 	"gorm.io/gorm"
 	"time"
 )
 
 type AccountUsecase struct {
-	accountRepository AccountRepository
+	accountRepository repo_interface.AccountRepository
 }
 
-func NewAccountUsecase(accountRepository AccountRepository) *AccountUsecase {
+func NewAccountUsecase(accountRepository repo_interface.AccountRepository) *AccountUsecase {
 	return &AccountUsecase{
 		accountRepository: accountRepository,
 	}
 }
 
-func (ac *AccountUsecase) GetAccountInfoByAccount(account string) (res domain.Account, err error) {
-	res, err = ac.accountRepository.GetAccountInfoByAccount(account)
+func (ac *AccountUsecase) GetAccountInfoByAccount(account string) (domain.Account, int) {
+	acc, err := ac.accountRepository.GetAccountInfoByAccount(account)
 	if err != nil {
-		return
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return domain.Account{}, error_code.CodeNotFound
+		}
+		return domain.Account{}, error_code.CodeDBError
 	}
-	return
+	return acc, error_code.CodeOK
 }
 
-func (ac *AccountUsecase) InsertAccount(account domain.Account) error {
+func (ac *AccountUsecase) InsertAccount(account domain.Account) int {
 	_, err := ac.accountRepository.GetAccountInfoByAccount(account.Account)
 	if err == nil {
-		return fmt.Errorf("account %s already exists", account.Account)
+		return error_code.CodeAlreadyExists
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return fmt.Errorf("failed to check account existence: %w", err)
+		return error_code.CodeDBError
 	}
 	account.CreatedAt = time.Now()
 	account.PasswordChangedAt = time.Now()
-	return ac.accountRepository.InsertAccount(account)
+	if err := ac.accountRepository.InsertAccount(account); err != nil {
+		return error_code.CodeDBError
+	}
+	return error_code.CodeOK
 }

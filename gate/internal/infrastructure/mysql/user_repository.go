@@ -14,18 +14,11 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 func (ur *UserRepository) GetUserById(id int64) (user domain.User, err error) {
-	result := ur.db.Model(&domain.User{AccountId: id}).First(&user)
-	if result.Error != nil {
-		err = result.Error
-		return
-	}
-	return
+	result := ur.db.Where("account_id = ?", id).First(&user)
+	return user, result.Error
 }
 
 func (ur *UserRepository) InsertUser(user domain.User) error {
-	result := ur.db.Create(user)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	result := ur.db.Create(&user)
+	return result.Error
 }

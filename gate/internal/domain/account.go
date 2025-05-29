@@ -3,14 +3,14 @@ package domain
 import "time"
 
 type Account struct {
-	Id                int64     `json:"id,omitempty"`
-	Account           string    `json:"account,omitempty"`
-	HashedPassword    string    `json:"hashedPassword,omitempty"`
-	Email             string    `json:"email,omitempty"`
-	PasswordChangedAt time.Time `json:"passwordChanged_at"`
+	Id                int64     `json:"id"`
+	Account           string    `json:"account"`
+	HashedPassword    string    `json:"hashedPassword"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"passwordChangedAt"`
 	CreatedAt         time.Time `json:"createdAt"`
 }
 
 func (this *Account) TableName() string {
-	return "account"
+	return "accounts"
 }

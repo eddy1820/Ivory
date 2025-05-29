@@ -17,18 +17,12 @@ func NewAccountRepository(db *gorm.DB) *AccountRepository {
 func (ar *AccountRepository) GetAccountInfoByAccount(account string) (domain.Account, error) {
 	data := domain.Account{}
 	result := ar.db.Where("account = ?", account).First(&data)
-	if result.Error != nil {
-		return data, result.Error
-	}
-	return data, nil
+	return data, result.Error
 }
 
 func (ar *AccountRepository) InsertAccount(account domain.Account) error {
 	account.CreatedAt = time.Now()
 	account.PasswordChangedAt = time.Now()
 	result := ar.db.Create(&account)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
