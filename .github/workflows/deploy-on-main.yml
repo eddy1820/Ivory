@@ -31,11 +31,11 @@ jobs:
         run: go generate ./...
 
       - name: Generate mocks
-        working-directory: server
+        working-directory: gate
         run: go generate ./...
 
       - name: Run tests
-        working-directory: server
+        working-directory: gate
         run: go test ./... -v
 
       - name: Get latest tag version
