@@ -22,9 +22,9 @@ jobs:
         run: go install github.com/golang/mock/mockgen@v1.6.0
 
       - name: Generate mocks
-        working-directory: server
+        working-directory: gate
         run: go generate ./...
 
       - name: Run tests
-        working-directory: server
+        working-directory: gate
         run: go test ./... -v
