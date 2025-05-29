@@ -45,12 +45,6 @@ func (s *Server) setupRouter() {
 	userUsecase := usecase.NewUserUsecase(mysql.NewUserRepository(s.db), mysql.NewAccountRepository(s.db))
 	handler.RegisterUserRoutes(router, s.tokenMaker, userUsecase, true)
 
-	//{
-	//	v1 := router.Group("/v1")
-	//	userRouter := v1.Group("/account")
-	//	userRouter.POST("/login", s.Login)
-	//	userRouter.POST("/signIn", s.Register)
-	//}
 	accountUsecase := usecase.NewAccountUsecase(mysql.NewAccountRepository(s.db))
 	handler.RegisterAccountRoutes(router, s.tokenMaker, accountUsecase)
 
