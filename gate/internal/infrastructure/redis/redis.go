@@ -1,15 +1,14 @@
-package setup
+package redis
 
 import (
 	"context"
-	"fmt"
-	"gate/internal/infrastructure/setting"
+	"gate/internal/config"
+	"gate/internal/logger"
 	"github.com/redis/go-redis/v9"
-	"log"
 	"time"
 )
 
-func NewRedisEngine(setting *setting.RedisSettings) *redis.Client {
+func NewRedisEngine(setting config.RedisConfig) *redis.Client {
 	clint := redis.NewClient(&redis.Options{
 		Addr:         "redis:" + setting.HttpPort,
 		ReadTimeout:  time.Second * 5,
@@ -20,8 +19,7 @@ func NewRedisEngine(setting *setting.RedisSettings) *redis.Client {
 
 	pong, err := clint.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalln("!!!!  Redis connection was refused")
+		logger.Logger.Error().Err(err).Msg("Redis connection was refused, pong: " + pong)
 	}
-	fmt.Println(pong)
 	return clint
 }

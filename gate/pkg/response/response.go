@@ -1,7 +1,7 @@
 package response
 
 import (
-	"gate/pkg/error_code"
+	"gate/internal/error_code"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

@@ -3,12 +3,13 @@ package router
 import (
 	"fmt"
 	"gate/docs"
-	"gate/internal/infrastructure/mysql"
-	"gate/internal/infrastructure/setting"
+	"gate/internal/config"
+	"gate/internal/infrastructure/repository"
 	"gate/internal/interface_adapter/handler"
 	"gate/internal/usecase"
 	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
 	swaggerfiles "github.com/swaggo/files"
@@ -19,10 +20,11 @@ type Server struct {
 	router     *gin.Engine
 	tokenMaker token.Maker
 	db         *gorm.DB
+	rdb        *redis.Client
 }
 
-func NewServer(db *gorm.DB, config *setting.TokenSettings) (*Server, error) {
-	tokenMaker, err := token.NewPasetoMaker(config.Secret)
+func NewServer(db *gorm.DB, rdb *redis.Client, config config.TokenConfig) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.Secret, config.ExpireDur)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
@@ -30,6 +32,7 @@ func NewServer(db *gorm.DB, config *setting.TokenSettings) (*Server, error) {
 	server := &Server{
 		tokenMaker: tokenMaker,
 		db:         db,
+		rdb:        rdb,
 	}
 
 	server.setupRouter()
@@ -42,10 +45,10 @@ func (s *Server) setupRouter() {
 	docs.SwaggerInfo.BasePath = ""
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler)) // http://localhost:7500/swagger/index.html
 
-	userUsecase := usecase.NewUserUsecase(mysql.NewUserRepository(s.db), mysql.NewAccountRepository(s.db))
+	userUsecase := usecase.NewUserUsecase(repository.NewUserRepository(s.db), repository.NewAccountRepository(s.db))
 	handler.RegisterUserRoutes(router, s.tokenMaker, userUsecase, true)
 
-	accountUsecase := usecase.NewAccountUsecase(mysql.NewAccountRepository(s.db))
+	accountUsecase := usecase.NewAccountUsecase(repository.NewAccountRepository(s.db))
 	handler.RegisterAccountRoutes(router, s.tokenMaker, accountUsecase)
 
 	s.router = router

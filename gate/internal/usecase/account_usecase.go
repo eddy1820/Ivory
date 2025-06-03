@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 	"gate/internal/domain"
+	"gate/internal/error_code"
 	"gate/internal/usecase/repo_interface"
-	"gate/pkg/error_code"
 	"gorm.io/gorm"
 	"time"
 )

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"gate/internal/domain"
-	"gate/internal/infrastructure/global"
-	"gate/internal/infrastructure/setting"
 	"gate/internal/usecase/mocks"
 	"gate/internal/usecase/usecase_interface"
 	"gate/pkg/response"
@@ -23,8 +21,7 @@ import (
 func setupAccountRouter(usecase usecase_interface.AccountUsecase) *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	global.TokenSetting = &setting.TokenSettings{Secret: "xxxx", Expire: 10 * time.Minute}
-	maker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	maker, _ := token.NewPasetoMaker("12345678901234567890123456789012", 10*time.Minute)
 	RegisterAccountRoutes(router, maker, usecase)
 	return router
 }

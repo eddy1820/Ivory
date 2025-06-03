@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"gate/internal/error_code"
 	"gate/internal/interface_adapter/middleware"
 	"gate/internal/usecase/usecase_interface"
-	"gate/pkg/error_code"
 	"gate/pkg/response"
 	"gate/pkg/token"
 	"github.com/gin-gonic/gin"

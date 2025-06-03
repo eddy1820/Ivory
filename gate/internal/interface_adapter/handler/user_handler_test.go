@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"gate/internal/domain"
+	"gate/internal/error_code"
 	"gate/internal/interface_adapter/middleware"
 	"gate/internal/usecase/mocks"
 	"gate/internal/usecase/usecase_interface"
-	"gate/pkg/error_code"
 	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func setupUserRouterAndHandler(t *testing.T, mockUsecase usecase_interface.UserUsecase) *gin.Engine {
@@ -23,7 +24,7 @@ func setupUserRouterAndHandler(t *testing.T, mockUsecase usecase_interface.UserU
 	r := gin.New()
 
 	fakePayload := &token.Payload{Username: "eddy123"}
-	maker, _ := token.NewPasetoMaker("12345678901234567890123456789012")
+	maker, _ := token.NewPasetoMaker("12345678901234567890123456789012", 10*time.Minute)
 
 	r.Use(func(c *gin.Context) {
 		c.Set(middleware.AuthorizationPayloadKey, fakePayload)

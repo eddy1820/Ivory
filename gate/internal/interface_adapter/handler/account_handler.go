@@ -2,9 +2,8 @@ package handler
 
 import (
 	"gate/internal/domain"
-	"gate/internal/infrastructure/global"
+	"gate/internal/error_code"
 	"gate/internal/usecase/usecase_interface"
-	"gate/pkg/error_code"
 	"gate/pkg/response"
 	"gate/pkg/token"
 	"gate/pkg/util"
@@ -109,7 +108,7 @@ func (ac AccountHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := ac.tokenMaker.CreateToken(account.Account, global.TokenSetting.Expire)
+	token, err := ac.tokenMaker.CreateToken(account.Account)
 	if err != nil {
 		response.Error(ctx, error_code.InvalidParams)
 		return
