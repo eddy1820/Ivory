@@ -6,6 +6,7 @@ import (
 	"gate/internal/config"
 	"gate/internal/infrastructure/repository"
 	"gate/internal/interface_adapter/handler"
+	"gate/internal/interface_adapter/middleware"
 	"gate/internal/usecase"
 	"gate/pkg/token"
 	"github.com/gin-gonic/gin"
@@ -40,8 +41,10 @@ func NewServer(db *gorm.DB, rdb *redis.Client, config config.TokenConfig) (*Serv
 }
 
 func (s *Server) setupRouter() {
-	router := gin.Default()
-	router.Use(gin.Logger(), gin.Recovery())
+	router := gin.New()
+	router.Use(middleware.RequestID())
+	router.Use(middleware.Recovery())
+	router.Use(middleware.Logger())
 	docs.SwaggerInfo.BasePath = ""
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler)) // http://localhost:7500/swagger/index.html
 

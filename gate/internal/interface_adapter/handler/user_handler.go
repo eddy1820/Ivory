@@ -34,7 +34,7 @@ func RegisterUserRoutes(router *gin.Engine, maker token.Maker, userUsecase useca
 	v1 := router.Group("/v1")
 	userRouter := v1.Group("/user")
 	if enableAuth {
-		userRouter.Use(middleware.AuthMiddleware(maker))
+		userRouter.Use(middleware.Auth(maker))
 	}
 	userRouter.POST("", controller.SetUser)
 	userRouter.GET("/:id", controller.GetUserById)

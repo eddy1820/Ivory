@@ -4,7 +4,7 @@ import "net/http"
 
 var (
 	Success                   = NewErrorData(http.StatusOK, 0, "Success")
-	InternalServerError       = NewErrorData(http.StatusInternalServerError, 10000000, "Internal server error")
+	InternalServerError       = NewErrorData(http.StatusInternalServerError, 500, "Internal server error")
 	InvalidParams             = NewErrorData(http.StatusBadRequest, 10000001, "Invalid params")
 	NotFound                  = NewErrorData(http.StatusNotFound, 10000002, "Not found")
 	UnauthorizedAuthNotExist  = NewErrorData(http.StatusUnauthorized, 10000003, "Unauthorized token error")

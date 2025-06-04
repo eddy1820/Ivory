@@ -11,6 +11,7 @@ import (
 func main() {
 	cfg, err := config.LoadConfig("internal/config/config.yaml")
 	if err != nil {
+		logger.Logger.Error().Err(err).Msg("Failed to load config")
 		panic("Failed to load config")
 	}
 

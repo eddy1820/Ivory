@@ -16,8 +16,7 @@ const (
 	AuthorizationPayloadKey = "authorization_payload"
 )
 
-// AuthMiddleware creates a gin middleware for authorization
-func AuthMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
+func Auth(tokenMaker token.Maker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(AuthorizationHeaderKey)
 
