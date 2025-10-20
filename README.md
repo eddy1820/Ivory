@@ -1,5 +1,3 @@
-Golang server
-
-Clean architecture
-
-CI/CD (AWS)
+- Golang server
+- Clean architecture
+- CI/CD (AWS, Docker)
