@@ -1,3 +1,5 @@
-Golang server\n
-Clean architecture\n
+Golang server
+
+Clean architecture
+
 CI/CD (AWS)
