@@ -24,9 +24,12 @@ http://localhost:7500/swagger/index.html
 docker compose -f docker-compose.debug.yml up -d
 ```
 Debug connection (Delve)
-Host:localhost
-Port:7800
+- Host:localhost
+- Port:7800
 
+
+🏗️ Project Structure
+```text
 Ivory/
 ├── gate/
 │   ├── cmd/server/main.go       # main entry point
@@ -42,3 +45,4 @@ Ivory/
 ├── docker-compose.yml           # normal mode
 ├── docker-compose.debug.yml     # debug mode (with Delve)
 └── README.md
+```
