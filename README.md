@@ -1,7 +1,6 @@
 # 🧱 Ivory Project
 
-Ivory is a modular backend system written in **Golang**, designed for web server logic and API services.  
-The project uses **Docker Compose** to orchestrate all dependencies such as **MySQL**, **Redis**, **Nginx**, and **Swagger UI**.
+Ivory is a modular backend system written in **Golang**, designed for web server logic and API services. The project follows **Clean Architecture** principles to ensure scalability, maintainability, and testability with a clear separation of concerns. It uses Docker Compose to manage dependencies including **MySQL**, **Redis**, **Nginx**, and **Swagger UI**.
 
 ---
 
