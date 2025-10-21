@@ -193,6 +193,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "httpStatus": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 }

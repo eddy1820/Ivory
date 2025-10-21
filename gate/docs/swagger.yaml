@@ -20,6 +20,8 @@ definitions:
         items:
           type: string
         type: array
+      httpStatus:
+        type: integer
       message:
         type: string
     type: object

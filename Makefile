@@ -1,17 +1,28 @@
 DB_URL=mysql://root:123456@tcp(localhost:7600)/IvoryDb
 name=add_users
 
-u:
+up:
 	docker compose up -d
-d:
+down:
 	docker compose down
-b:
+build:
 	docker compose build
 
-r:
+re:
 	docker compose down
 	docker compose up -d
 
+
+up-debug:
+	docker compose  -f docker-compose.debug.yml up -d
+down-debug:
+	docker compose -f docker-compose.debug.yml down
+build-debug:
+	docker compose -f docker-compose.debug.yml build
+
+re-debug:
+	docker compose -f docker-compose.debug.yml down
+	docker compose -f docker-compose.debug.yml up -d
 
 migrateup:
 	migrate -path migration -database "$(DB_URL)" -verbose up
