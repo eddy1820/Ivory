@@ -17,7 +17,7 @@ func main() {
 	cfg, err := config.LoadConfig("internal/config/config.yaml")
 	if err != nil {
 		logger.Logger.Error().Err(err).Msg("Failed to load config")
-		panic("Failed to load config")
+		return
 	}
 
 	logger.Init(cfg.Server.RunMode)
@@ -25,6 +25,7 @@ func main() {
 	db, err := database.NewDBEngine(cfg.Database, cfg.Server)
 	if err != nil {
 		logger.Logger.Error().Err(err).Msg("cannot start db")
+		return
 	}
 
 	rdb := redis.NewRedisEngine(cfg.Redis)
@@ -46,5 +47,16 @@ func main() {
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
 		logger.Logger.Error().Err(err).Msg("HTTP shutdown error")
+	}
+
+	if db != nil {
+		sqlDB, err := db.DB()
+		if err == nil {
+			_ = sqlDB.Close()
+		}
+	}
+
+	if rdb != nil && rdb.Conn() != nil {
+		_ = rdb.Close()
 	}
 }
