@@ -6,5 +6,5 @@ ADD . /gate
 WORKDIR /gate
 RUN go mod download
 RUN go build -o main ./cmd/server
-EXPOSE 7500
+EXPOSE 7690
 CMD ["./main"]

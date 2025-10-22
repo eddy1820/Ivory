@@ -16,7 +16,7 @@ docker compose up -d
 ```
 
 ### Swagger API Documentation
-http://localhost:7500/swagger/index.html
+http://localhost:7690/swagger/index.html
 
 ## 🚀 Debug Mode (optional)
 ```bash

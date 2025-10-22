@@ -18,7 +18,7 @@ services:
     container_name: redis
     restart: always
     ports:
-      - 6379:6379
+      - 9900:9900
     volumes:
       - ./redis:/data
     networks:
@@ -32,7 +32,7 @@ services:
       - ./gate:/go/src
     container_name: gate-swag-debug
     ports:
-      - 7500:7500
+      - 7690:7690
       - 7800:7800
     restart: no
     hostname: ivory_app
