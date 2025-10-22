@@ -50,13 +50,14 @@ func main() {
 	}
 
 	if db != nil {
-		sqlDB, err := db.DB()
-		if err == nil {
+		if sqlDB, err := db.DB(); err == nil {
 			_ = sqlDB.Close()
+			logger.Logger.Info().Msg("DB connection closed")
 		}
 	}
 
-	if rdb != nil && rdb.Conn() != nil {
+	if rdb != nil {
 		_ = rdb.Close()
+		logger.Logger.Info().Msg("Redis connection closed")
 	}
 }
