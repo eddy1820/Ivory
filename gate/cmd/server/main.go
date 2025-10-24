@@ -7,6 +7,8 @@ import (
 	"gate/internal/infrastructure/redis"
 	"gate/internal/logger"
 	"gate/internal/router"
+	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,6 +37,12 @@ func main() {
 		logger.Logger.Error().Err(err).Msg("cannot create server")
 		return
 	}
+
+	go func() {
+		if err := http.ListenAndServe(":6060", nil); err != nil {
+			log.Println("[pprof] error:", err)
+		}
+	}()
 
 	go server.Start()
 

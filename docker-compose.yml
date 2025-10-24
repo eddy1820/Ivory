@@ -33,12 +33,13 @@ services:
     container_name: gate-swag
     ports:
       - 7690:7690
+      - 6060:6060 # pprof
     restart: no
     hostname: ivory_app
     networks:
       - net
     environment:
-      DB_HOST: IvoryDb
+      DB_HOST: mysql
     depends_on:
       - mysql
     working_dir: /go/src

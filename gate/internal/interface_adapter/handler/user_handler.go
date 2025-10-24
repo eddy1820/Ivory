@@ -47,7 +47,7 @@ func RegisterUserRoutes(router *gin.Engine, maker token.Maker, userUsecase useca
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "JWT Token"
+// @Param Authorization header string true "Token"
 // @Param body body handler.SetUserRequest true "User info"
 // @Success 200 {object} error_code.ErrorData
 // @Router /v1/user [post]
