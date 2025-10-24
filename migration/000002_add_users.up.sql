@@ -6,6 +6,6 @@ CREATE TABLE users
     name       varchar(255) NOT NULL DEFAULT '',
     address    varchar(255) NOT NULL DEFAULT '',
     PRIMARY KEY (id),
-    FOREIGN KEY (account_id) REFERENCES account_info (id),
+    FOREIGN KEY (account_id) REFERENCES accounts (id),
     UNIQUE KEY idx_account_id (account_id)
 );
